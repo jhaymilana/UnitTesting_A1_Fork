@@ -35,9 +35,16 @@ app.MapGet("/recipes/byIngredient", (string? name, int? id) =>
 {
     try 
     {
-        HashSet<Recipe> recipes = bll.GetRecipesByIngredient(id, name);
+        HashSet<Recipe>? recipes = bll.GetRecipesByIngredient(id, name);
+
+        if (recipes != null)
+        {
+            return Results.NotFound(recipes);
+        }
+
         return Results.Ok(recipes);
-    } catch(Exception ex)
+    } 
+    catch(Exception ex)
     {
         return Results.NotFound();
     }
@@ -46,9 +53,23 @@ app.MapGet("/recipes/byIngredient", (string? name, int? id) =>
 ///<summary>
 /// Returns a HashSet of all Recipes that only contain ingredients that belong to the Dietary Restriction provided by name or Primary Key
 /// </summary>
-app.MapGet("/recipes/byDiet", (string name, int id) =>
+app.MapGet("/recipes/byDiet", (string? name, int id) =>
 {
+    try
+    {
+        HashSet<Recipe>? recipes = bll.GetRecipesByIngredient(id, name);
 
+        if (recipes != null)
+        {
+            return Results.NotFound(recipes);
+        }
+
+        return Results.Ok(recipes);
+    }
+    catch (Exception ex)
+    {
+        return Results.NotFound();
+    }
 });
 
 ///<summary>
@@ -56,7 +77,21 @@ app.MapGet("/recipes/byDiet", (string name, int id) =>
 /// </summary>
 app.MapGet("/recipes", (string name, int id) =>
 {
+    try
+    {
+        HashSet<Recipe>? recipes = bll.GetRecipes(id, name);
 
+        if (recipes != null)
+        {
+            return Results.NotFound(recipes);
+        }
+
+        return Results.Ok(recipes);
+    }
+    catch (Exception ex)
+    {
+        return Results.NotFound();
+    }
 });
 
 ///<summary>
@@ -72,9 +107,20 @@ app.MapGet("/recipes", (string name, int id) =>
 /// 
 /// All IDs should be created for these objects using the returned value of the AppStorage.GeneratePrimaryKey() method
 /// </summary>
-app.MapPost("/recipes", () => {
+app.MapPost("/recipes", (RecipeInputModel inputModel) =>
+{
+    try
+    {
+        Recipe createdRecipe = bll.CreateNewRecipe(inputModel);
 
+        return Results.Created($"/recipes/{createdRecipe.Id}", createdRecipe);
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
 });
+
 
 ///<summary>
 /// Deletes an ingredient from the database. 
@@ -83,7 +129,16 @@ app.MapPost("/recipes", () => {
 ///</summary>
 app.MapDelete("/ingredients", (int id, string name) =>
 {
+    try
+    {
+        Ingredient? deletedIngredient = bll.DeleteIngredient(id, name);
 
+        return Results.NoContent();
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
 });
 
 /// <summary>
@@ -92,7 +147,23 @@ app.MapDelete("/ingredients", (int id, string name) =>
 /// </summary>
 app.MapDelete("/recipes", (int id, string name) =>
 {
+    try
+    {
+        Recipe deletedRecipe = bll.DeleteRecipe(id, name);
 
+        if (deletedRecipe != null)
+        {
+            return Results.NoContent();
+        }
+        else
+        {
+            return Results.NotFound("Recipe not found.");
+        }
+    }
+    catch (InvalidOperationException ex)
+    {
+        return Results.BadRequest(ex.Message);
+    }
 });
 
 #endregion

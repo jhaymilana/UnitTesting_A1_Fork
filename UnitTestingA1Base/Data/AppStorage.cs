@@ -266,12 +266,12 @@ namespace UnitTestingA1Base.Data
                 MeasurementUnit = MeasurementUnit.Grams
             },
                 new RecipeIngredient
-        {
-            IngredientId = 6,
-            RecipeId = 12,
-            Amount = 250,
-            MeasurementUnit = MeasurementUnit.Grams
-        },
+            {
+                IngredientId = 6,
+                RecipeId = 12,
+                Amount = 250,
+                MeasurementUnit = MeasurementUnit.Grams
+            },
            new RecipeIngredient
             {
                 IngredientId = 7,
